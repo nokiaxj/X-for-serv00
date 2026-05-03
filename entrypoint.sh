@@ -303,19 +303,37 @@ generate_config() {
             "tag": "direct"
         },
         {
-            "protocol": "blackhole",
-            "tag": "block"
-        }
+            "protocol": "wireguard",
+            "tag": "warp_ipv6",
+            "settings": {
+              "secretKey": "wBBUpigxbXdv8NGRLHD0BnMfBhHlfujf9s8/BG8BLVo=", // ⚠️ 必须修改
+              "peers": [
+                {
+                "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
+                "endpoint": "162.159.192.1:2408" // 使用 IP 形式，防止解析失败
+                }
+              ],
+              "address": [
+                "172.16.0.2/32",
+                "2606:4700:110:8e62:2f62:eb69:3d97:c6a5/128" // ⚠️ 替换为你申请到的 WARP IPv6
+              ],
+              "mtu": 1280
+			}  
+        }	
     ],
     "routing":{
-        "domainStrategy":"AsIs",
+        "domainStrategy":"IPIfNonMatch",
         "rules":[
+		    {
+                "type": "field",
+                "network": "udp,tcp",
+                "outboundTag": "warp_ipv6",
+                "ip": ["::/0"]
+            },
             {
-                "type":"field",
-                "domain":[
-                    "geosite:category-ads-all"
-                ],
-                "outboundTag":"block"
+              "type": "field",
+              "outboundTag": "direct",
+              "network": "udp,tcp"
             }
         ]
     }
