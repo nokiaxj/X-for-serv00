@@ -298,45 +298,44 @@ generate_config() {
         }
     ],
     "outbounds": [
-        {
-            "protocol": "freedom",
-            "tag": "direct"
-        },
-        {
-            "protocol": "wireguard",
-            "tag": "warp_ipv6",
-            "settings": {
-              "secretKey": "wBBUpigxbXdv8NGRLHD0BnMfBhHlfujf9s8/BG8BLVo=", // ⚠️ 必须修改
-              "peers": [
-                {
-                "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
-                "endpoint": "162.159.192.1:2408" // 使用 IP 形式，防止解析失败
-                }
-              ],
-              "address": [
-                "172.16.0.2/32",
-                "2606:4700:110:8e62:2f62:eb69:3d97:c6a5/128" // ⚠️ 替换为你申请到的 WARP IPv6
-              ],
-              "mtu": 1280
-			}  
-        }	
-    ],
-    "routing":{
-        "domainStrategy":"IPIfNonMatch",
-        "rules":[
-		    {
-                "type": "field",
-                "network": "udp,tcp",
-                "outboundTag": "warp_ipv6",
-                "ip": ["::/0"]
-            },
+      {
+        "protocol": "freedom",
+        "tag": "direct",
+        "settings": {
+          "domainStrategy": "UseIPv4" // 强制优先使用 IPv4，防止直连 IPv6 失败
+        }
+      },
+      {
+        "tag": "warp-ipv6",
+        "protocol": "wireguard",
+        "settings": {
+          "secretKey": "wBBUpigxbXdv8NGRLHD0BnMfBhHlfujf9s8/BG8BLVo=", // 填入您的 Private Key
+          "address": [
+            "172.16.0.2/32",
+            "2606:4700:110:8e62:2f62:eb69:3d97:c6a5/128" // 填入 WARP 分配的内网 IPv6 地址
+          ],
+          "peers": [
             {
-              "type": "field",
-              "outboundTag": "direct",
-              "network": "udp,tcp"
+              "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=", // WARP 官方公钥
+              "endpoint": "162.159.192.1:2408" // 使用 IPv4 地址连接 WARP 节点
             }
+          ],
+          "mtu": 1280 // 建议设置为 1280 以保证在各种网络下的兼容性
+        }
+      }
+    ],
+    "routing": {
+    "domainStrategy": "IPOnDemand", // 遇到域名时，根据需要解析 IP 以匹配路由规则
+    "rules": [
+      {
+        "type": "field",
+        "outboundTag": "warp-ipv6",
+        "ip": [
+          "::/0" // 匹配所有目标为 IPv6 的流量
         ]
-    }
+      }
+    ]
+  }
 }
 EOF
 }
