@@ -237,6 +237,10 @@ generate_config() {
         "loglevel": "error"
     },
     "inbounds":[
+	    "sniffing": {
+           "enabled": true,
+           "destOverride": ["http", "tls"]
+        },
         {
             "port":${PORT1},
             "listen":"127.0.0.1",
@@ -322,10 +326,40 @@ generate_config() {
           ],
           "mtu": 1280 // 建议设置为 1280 以保证在各种网络下的兼容性
         }
+      },
+	  {
+        "tag": "residential-out",
+        "protocol": "socks",
+        "settings": {
+          "servers": [
+            {
+              "address": "104.239.107.47", 
+              "port": 5699,
+              "users": [
+                {
+                  "user": "vpdutlfd",
+                  "pass": "4s7a8tfgqz1r"
+                }
+              ]
+            }
+          ]
+        }
       }
     ],
     "routing": {
     "domainStrategy": "IPOnDemand", // 遇到域名时，根据需要解析 IP 以匹配路由规则
+	"rules": [
+      {
+        "type": "field",
+        "outboundTag": "residential-out",
+        "domain": [
+          "ping0.cc", 
+          "domain:ip125.com",
+          "geosite:netflix",
+          "openai.com"
+        ]
+      }
+    ],
     "rules": [
       {
         "type": "field",
