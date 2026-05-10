@@ -237,10 +237,6 @@ generate_config() {
         "loglevel": "error"
     },
     "inbounds":[
-	    "sniffing": {
-           "enabled": true,
-           "destOverride": ["http", "tls"]
-        },
         {
             "port":${PORT1},
             "listen":"127.0.0.1",
